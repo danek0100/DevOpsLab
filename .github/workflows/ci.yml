@@ -8,9 +8,14 @@ on:
     
   workflow_dispatch:
 
+env:
+  global_env: global
+
 jobs:
   sys_info:
     runs-on: ubuntu-latest
+    env:
+      local_env: $GITHUB_JOB
     steps:
       - uses: actions/checkout@v3
       - name: user
