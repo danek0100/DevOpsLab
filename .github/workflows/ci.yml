@@ -15,29 +15,20 @@ jobs:
   sys_info:
     runs-on: ubuntu-latest
     env:
-      local_env: $GITHUB_JOB
+      local_env: job
     steps:
-      - uses: actions/checkout@v3
-      - name: user
-        run: uname
-      - name: sysinfo
-        run: |
-          pwd
-          lshw
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: check tools
+        run: g++ -v
     
   build:
     runs-on: ubuntu-latest
-    env:
-      local_env: job_print_env
+    needs: sys_info
+#    env:
+#      local_env: job_print_env
     steps:
+      - uses: actions/chekout@v2
       - name: build
-        run: |
-          sleep 15
-          echo "test build" >> build.txt
+        run: g++ main.cpp -o app_$ImageOS
       
   test:
     runs-on: ubuntu-latest
