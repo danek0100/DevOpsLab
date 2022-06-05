@@ -31,7 +31,12 @@ jobs:
         run: |
           g++ main.cpp -o app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
           ls -la
-          ll
+          ./app_${RUNNER_OS}_ver.${GITHUB_RUN_NUMBER}
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: my_app
+          path: app_**
       
   test:
     runs-on: ubuntu-latest
