@@ -26,9 +26,9 @@ jobs:
 #    env:
 #      local_env: job_print_env
     steps:
-      - uses: actions/chekout@v2
+      - uses: actions/checkout@v3
       - name: build
-        run: g++ main.cpp -o app_$ImageOS
+        run: g++ main.cpp -o app_${{ImageOS}}
       
   test:
     runs-on: ubuntu-latest
