@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  global_env: global
+  artifact_name: app_ver_${{ github.sha }}
 
 jobs:
   build_unix:
@@ -27,7 +27,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: my_app
+          name: ${{ env.artifact_name }}
           path: app_**
           retention-days: 1
     
@@ -41,7 +41,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: my_app
+          name: ${{ env.artifact_name }}
           path: main.cpp
           retention-days: 1
   
@@ -63,3 +63,24 @@ jobs:
           Repository: ${{ github.repository }}
             
           See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+          
+  export:
+    runs-on: ubuntu-20.04
+    needs: [build_unix, build_win]
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: ${{ env.artifact_name }}
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          document: ${{ env.artifact_name }}
+          message: |
+            ✅                    ✅                       ✅
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+         
