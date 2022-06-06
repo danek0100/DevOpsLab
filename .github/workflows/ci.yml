@@ -12,8 +12,11 @@ env:
   global_env: global
 
 jobs:
-  build_ubuntu:
-    runs-on: ubuntu-latest
+  build_unix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v3
       - name: build
@@ -42,3 +45,19 @@ jobs:
           path: main.cpp
           retention-days: 1
   
+  report:
+    runs-on: ubuntu-20.04
+    needs: [build_unix, build_win]
+    steps:
+    - name: send telegram message on push
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }} 
+        message: |
+          ${{ github.actor }} created commit:
+          Commit message: ${{ github.event.commits[0].message }}
+            
+          Repository: ${{ github.repository }}
+            
+          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
